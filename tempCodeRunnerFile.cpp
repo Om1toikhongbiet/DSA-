@@ -1,1 +1,2 @@
-int step = 1 ;
+or ( char c : s ) cout << c << " " ;
+        cout << "\n";
