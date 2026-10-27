@@ -40,6 +40,7 @@ int main() {
         for (int i = 1; i <= n; i++)
             fout << deg[i] << (i < n ? " " : "\n");
         int pendant = 0;
+            
         for (int i = 1; i <= n; i++)
             if (deg[i] == 1) pendant++;
         fout << pendant << "\n";
