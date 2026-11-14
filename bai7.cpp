@@ -1,28 +1,72 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-map<long long, long long> f;
-long long mod = 1e9 + 7;
+struct Edge {
+    int u, v;
+    long long w;
+    int id;
+};
 
-long long fibo(long long n) {
-    if (f.count(n)) return f[n];
-    long long k = n / 2;
-    long long f1 = fibo(k), f2 = fibo(k + 1);
-    if (n % 2 == 0) return f[n] = (f1 * (2 * f2 - f1 + mod)) % mod;
-    return f[n] = (f1 * f1 + f2 * f2) % mod;
-}
+struct DSU {
+    vector<int> parent;
+    DSU(int n) {
+        parent.resize(n + 1);
+        iota(parent.begin(), parent.end(), 0);
+    }
+    int find(int i) {
+        if (parent[i] == i)
+            return i;
+        return parent[i] = find(parent[i]);
+    }
+    bool unite(int i, int j) {
+        int root_i = find(i);
+        int root_j = find(j);
+        if (root_i != root_j) {
+            parent[root_i] = root_j;
+            return true;
+        }
+        return false;
+    }
+};
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    f[0] = 0; f[1] = 1; f[2] = 1;
-    int t;
-    if (cin >> t) {
-        while (t--) {
-            long long n;
-            cin >> n;
-            cout << fibo(n) << "\n";
+    if (freopen("DT.INP", "r", stdin)) {}
+    if (freopen("DT.OUT", "w", stdout)) {}
+
+    int n, m;
+    if (!(cin >> n >> m)) return 0;
+
+    vector<Edge> edges(m);
+    for (int i = 0; i < m; ++i) {
+        cin >> edges[i].u >> edges[i].v >> edges[i].w;
+        if (edges[i].u > edges[i].v) {
+            swap(edges[i].u, edges[i].v);
+        }
+        edges[i].id = i + 1;
+    }
+
+    sort(edges.begin(), edges.end(), [](const Edge& a, const Edge& b) {
+        return tie(a.w, a.u, a.v, a.id) > tie(b.w, b.u, b.v, b.id);
+    });
+
+    DSU dsu(n);
+    long long total_weight = 0;
+    vector<pair<int, int>> mst_edges;
+
+    for (const auto& e : edges) {
+        if (dsu.unite(e.u, e.v)) {
+            total_weight += e.w;
+            mst_edges.push_back({e.u, e.v});
+            if ((int)mst_edges.size() == n - 1) break;
         }
     }
+
+    cout << total_weight << "\n";
+    for (const auto& p : mst_edges) {
+        cout << p.first << " " << p.second << "\n";
+    }
+
     return 0;
 }
